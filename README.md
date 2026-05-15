@@ -115,7 +115,6 @@ bleu = evaluate_bleu(model, test_loader, tgt_vocab, device=device)
 
 A higher BLEU score indicates better overlap between generated translations and reference translations.
 
-R
 
 ## Implementation Notes
 
