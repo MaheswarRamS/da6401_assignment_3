@@ -1,11 +1,4 @@
-"""
-Noam Learning Rate Scheduler
-Reference: "Attention Is All You Need" (Vaswani et al., 2017)
-           https://arxiv.org/abs/1706.03762
 
-Formula:
-    lrate = d_model^(-0.5) * min(step^(-0.5), step * warmup_steps^(-1.5))
-"""
 
 import torch
 import torch.optim as optim
@@ -40,7 +33,9 @@ class NoamScheduler(LRScheduler):
     ) -> None:
         # TODO: Store d_model and warmup_steps as instance attributes
         # TODO: Call the parent __init__
-        raise NotImplementedError
+        self.d_model = d_model
+        self.warmup_steps = warmup_steps
+        super().__init__(optimizer, last_epoch)
 
     # ------------------------------------------------------------------
     def _get_lr_scale(self) -> float:
@@ -55,7 +50,8 @@ class NoamScheduler(LRScheduler):
             scale = d_model^(-0.5) * min(step^(-0.5), step * warmup_steps^(-1.5))
         """
         # TODO: Implement and return the Noam scale factor
-        raise NotImplementedError
+        step = max(1, self.last_epoch +1)
+        return (self.d_model ** -0.5) * min(step ** -0.5, step *(self.warmup_steps ** -1.5),)
 
     # ------------------------------------------------------------------
     def get_lr(self) -> list[float]:
@@ -72,7 +68,8 @@ class NoamScheduler(LRScheduler):
             Access base learning rates via `self.base_lrs`.
         """
         # TODO: Return a list of scaled LRs, one per param group
-        raise NotImplementedError
+        scale = self._get_lr_scale()
+        return [base_lr * scale for base_lr in self.base_lrs]
 
 
 # ──────────────────────────────────────────────────────────────────────
